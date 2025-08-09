@@ -1,12 +1,12 @@
 import { ACCOUNT_ID } from "@/app/config";
 import { NextResponse } from "next/server";
 import {
-  chainIdParam,
-  addressParam,
-  SignRequestResponse200,
-  AddressSchema,
-  MetaTransactionSchema,
-  SignRequestSchema,
+    chainIdParam,
+    addressParam,
+    SignRequestResponse200,
+    AddressSchema,
+    MetaTransactionSchema,
+    SignRequestSchema,
 } from "@bitte-ai/agent-sdk";
 
 export async function GET() {
@@ -453,61 +453,251 @@ export async function GET() {
                 }
             },
             "/api/tools/eth-sign-request": {
-              get: {
-                summary: "returns ethereum signature requests",
-                description:
-                    "Constructs requested signature requests (eth_sign, personal_sign, eth_signTypedData, eth_signTypedData_v4)",
-                operationId: "eth-sign",
-                parameters: [
-                    { $ref: "#/components/parameters/chainId" },
-                    { $ref: "#/components/parameters/evmAddress" },
-                    { $ref: "#/components/parameters/method" },
-                    { $ref: "#/components/parameters/message" },
-                ],
-                responses: {
-                    "200": { $ref: "#/components/responses/SignRequestResponse200" },
+                get: {
+                    summary: "returns ethereum signature requests",
+                    description:
+                        "Constructs requested signature requests (eth_sign, personal_sign, eth_signTypedData, eth_signTypedData_v4)",
+                    operationId: "eth-sign",
+                    parameters: [
+                        { $ref: "#/components/parameters/chainId" },
+                        { $ref: "#/components/parameters/evmAddress" },
+                        { $ref: "#/components/parameters/method" },
+                        { $ref: "#/components/parameters/message" },
+                    ],
+                    responses: {
+                        "200": { $ref: "#/components/responses/SignRequestResponse200" },
+                    },
                 },
-              },
             },
+            "/api/tools/find-bridge-routes": {
+                get: {
+                    summary: "Find optimal bridge routes",
+                    description: "Find the best bridge routes between chains with fees and time estimates",
+                    operationId: "find-bridge-routes",
+                    parameters: [
+                        {
+                            name: "fromChain",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" },
+                            description: "Source blockchain (e.g., ethereum, polygon)"
+                        },
+                        {
+                            name: "toChain",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" },
+                            description: "Destination blockchain"
+                        },
+                        {
+                            name: "token",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" },
+                            description: "Token symbol (e.g., ETH, USDC)"
+                        },
+                        {
+                            name: "amount",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" },
+                            description: "Amount to bridge"
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            routes: {
+                                                type: "array",
+                                                items: {
+                                                    type: "object",
+                                                    properties: {
+                                                        protocol: { type: "string" },
+                                                        estimatedTime: { type: "string" },
+                                                        fee: { type: "string" }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/tools/create-bridge-transaction": {
+                post: {
+                    summary: "Create bridge transaction",
+                    description: "Generate bridge transaction for user to sign",
+                    operationId: "create-bridge-transaction",
+                    requestBody: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    type: "object",
+                                    required: ["protocol", "fromChain", "toChain", "token", "amount", "recipient"],
+                                    properties: {
+                                        protocol: { type: "string" },
+                                        fromChain: { type: "string" },
+                                        toChain: { type: "string" },
+                                        token: { type: "string" },
+                                        amount: { type: "string" },
+                                        recipient: { type: "string" },
+                                        slippage: { type: "string" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            transaction: {
+                                                type: "object",
+                                                properties: {
+                                                    to: { type: "string" },
+                                                    data: { type: "string" },
+                                                    value: { type: "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/tools/track-bridge-status": {
+                get: {
+                    summary: "Track bridge transaction status",
+                    description: "Check the status of a bridge transaction",
+                    operationId: "track-bridge-status",
+                    parameters: [
+                        {
+                            name: "txHash",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" }
+                        },
+                        {
+                            name: "protocol",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" }
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            status: { type: "string" },
+                                            confirmations: { type: "number" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "/api/tools/estimate-bridge-gas": {
+                get: {
+                    summary: "Estimate bridge gas costs",
+                    description: "Get gas cost estimates for bridge transactions",
+                    operationId: "estimate-bridge-gas",
+                    parameters: [
+                        {
+                            name: "fromChain",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" }
+                        },
+                        {
+                            name: "toChain",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" }
+                        },
+                        {
+                            name: "amount",
+                            in: "query",
+                            required: true,
+                            schema: { type: "string" }
+                        }
+                    ],
+                    responses: {
+                        "200": {
+                            description: "Successful response",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        type: "object",
+                                        properties: {
+                                            gasEstimate: { type: "string" },
+                                            gasCostUSD: { type: "string" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         },
         components: {
-      parameters: {
-        evmAddress: { ...addressParam, name: "evmAddress" },
-        method: {
-          name: "method",
-          description: 'The signing method to be used.',
-          in: "query",
-          required: true,
-          schema: {
-            type: "string",
-            enum: [
-              'eth_sign',
-              'personal_sign',
-              'eth_signTypedData',
-              'eth_signTypedData_v4',
-            ],
-          },
-          example: "eth_sign",
+            parameters: {
+                evmAddress: { ...addressParam, name: "evmAddress" },
+                method: {
+                    name: "method",
+                    description: 'The signing method to be used.',
+                    in: "query",
+                    required: true,
+                    schema: {
+                        type: "string",
+                        enum: [
+                            'eth_sign',
+                            'personal_sign',
+                            'eth_signTypedData',
+                            'eth_signTypedData_v4',
+                        ],
+                    },
+                    example: "eth_sign",
+                },
+                chainId: { ...chainIdParam, example: 8453, required: false },
+                message: {
+                    name: "message",
+                    in: "query",
+                    required: false,
+                    description: "any text message",
+                    schema: { type: "string" },
+                    example: "Hello Bitte",
+                },
+            },
+            responses: {
+                SignRequestResponse200,
+            },
+            schemas: {
+                Address: AddressSchema,
+                MetaTransaction: MetaTransactionSchema,
+                SignRequest: SignRequestSchema,
+            },
         },
-        chainId: {...chainIdParam, example: 8453, required: false},
-        message: {
-          name: "message",
-          in: "query",
-          required: false,
-          description: "any text message",
-          schema: { type: "string" },
-          example: "Hello Bitte",
-        },
-      },
-      responses: {
-        SignRequestResponse200,
-      },
-      schemas: {
-        Address: AddressSchema,
-        MetaTransaction: MetaTransactionSchema,
-        SignRequest: SignRequestSchema,
-      },
-    },
     };
 
     return NextResponse.json(pluginData);
