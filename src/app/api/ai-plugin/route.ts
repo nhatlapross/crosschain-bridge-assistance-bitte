@@ -49,7 +49,7 @@ export async function GET() {
                     { type: "sign-message" }
                 ],
                 // Thumbnail image for your agent
-                image: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/bridge-icon.svg`,
+                image: `https://s2.coinmarketcap.com/static/img/coins/64x64/14399.png`,
                 // The repo url for your agent
                 repo: 'https://github.com/nhatlapross/crosschain-bridge-assistance-bitte',
                 // Bridge assistant supports multiple DeFi categories
