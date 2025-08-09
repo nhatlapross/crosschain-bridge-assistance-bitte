@@ -20,7 +20,7 @@ export async function GET() {
         servers: [
             {
                 // Enter the base and open url of your agent here, make sure it is reachable
-                url: "https://crosschain-bridge-assistance-bitte.vercel.app/.well-known/ai-plugin.json"
+                url: "https://crosschain-bridge-assistance-bitte.vercel.app/"
             }
         ],
         "x-mb": {
