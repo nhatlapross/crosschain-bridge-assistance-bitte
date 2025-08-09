@@ -13,34 +13,49 @@ export async function GET() {
     const pluginData = {
         openapi: "3.0.0",
         info: {
-            title: "Boilerplate Agent",
-            description: "API for the boilerplate",
+            title: "Cross chain bridge assistance",
+            description: "API for the cross chain bridge assistance",
             version: "1.0.0"
         },
         servers: [
             {
                 // Enter the base and open url of your agent here, make sure it is reachable
-                url: "https://agent-next-boilerplate.vercel.app/"
+                url: "https://crosschain-bridge-assistance-bitte.vercel.app/"
             }
         ],
         "x-mb": {
             // The account id of the user who created the agent found in .env file
             "account-id": ACCOUNT_ID,
             // The email of the user who created the agent
-            email: "youremail@gmail.com",
+            email: "nhatlapross@gmail.com",
             assistant: {
-                name: "Blockchain Assistant",
-                description: "An assistant that answers with blockchain information, tells the user's account id, interacts with twitter, creates transaction payloads for NEAR and EVM blockchains, and flips coins.",
-                instructions: "You create near and evm transactions, give blockchain information, tell the user's account id, interact with twitter and flip coins. For blockchain transactions, first generate a transaction payload using the appropriate endpoint (/api/tools/create-near-transaction or /api/tools/create-evm-transaction), then explicitly use the 'generate-transaction' tool for NEAR or 'generate-evm-tx' tool for EVM to actually send the transaction on the client side. For EVM transactions, make sure to provide the 'to' address (recipient) and 'amount' (in ETH) parameters when calling /api/tools/create-evm-transaction. Simply getting the payload from the endpoints is not enough - the corresponding tool must be used to execute the transaction.",
-                tools: [{ type: "generate-transaction" }, { type: "generate-evm-tx" }, { type: "sign-message" }],
+                name: "Cross-Chain Bridge Assistant",
+                description: "Smart bridge assistant for seamless cross-chain asset transfers with best rates and security",
+                instructions: `You are a Cross-Chain Bridge Assistant that helps users:
+                1. Find the best bridge routes between different blockchains
+                2. Compare fees, speed, and security of different bridge protocols
+                3. Execute safe cross-chain transfers
+                4. Track bridge transaction status
+                5. Provide educational content about bridge risks and best practices
+                
+                Always prioritize user safety and explain risks before any bridge operation.
+                Check gas fees on both source and destination chains.
+                Recommend trusted bridge protocols based on amount and route.
+                
+                For bridge transactions, first use find-bridge-routes to show options, then create-bridge-transaction to generate payload, and finally use generate-evm-tx or generate-transaction to execute.`,
+                tools: [
+                    { type: "generate-transaction" }, 
+                    { type: "generate-evm-tx" }, 
+                    { type: "sign-message" }
+                ],
                 // Thumbnail image for your agent
-                image: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/bitte.svg`,
-                // The repo url for your agent https://github.com/your-username/your-agent-repo
-                repo: 'https://github.com/BitteProtocol/agent-next-boilerplate',
-                // The categories your agent supports ["DeFi", "DAO", "NFT", "Social"]
-                categories: ["DeFi", "DAO", "Social"],
-                // The chains your agent supports 1 = mainnet, 8453 = base
-                chainIds: [1, 8453]
+                image: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/bridge-icon.svg`,
+                // The repo url for your agent
+                repo: 'https://github.com/nhatlapross/crosschain-bridge-assistance-bitte',
+                // Bridge assistant supports multiple DeFi categories
+                categories: ["Bridge", "DeFi", "Infrastructure"],
+                // Support major chains for bridging
+                chainIds: [1, 137, 56, 42161, 10, 8453, 43114, 250]
             },
         },
         paths: {
